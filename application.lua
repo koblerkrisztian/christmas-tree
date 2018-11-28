@@ -1,0 +1,8 @@
+ws2812.init()
+buffer = ws2812.newBuffer(26, 4)
+ws2812_effects.init(buffer)
+ws2812_effects.set_speed(100)
+ws2812_effects.set_brightness(50)
+ws2812_effects.set_color(0, 255, 128, 0)
+ws2812_effects.set_mode("flicker")
+ws2812_effects.start()
