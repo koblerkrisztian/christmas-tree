@@ -1,11 +1,9 @@
+NUM_LEDS = 26
+NUM_COLORS = 4
+
 ws2812.init()
-buffer = ws2812.newBuffer(26, 4)
---ws2812_effects.init(buffer)
---ws2812_effects.set_speed(100)
---ws2812_effects.set_brightness(50)
---ws2812_effects.set_color(128, 255, 0, 0)
---ws2812_effects.set_mode("flicker")
---ws2812_effects.start()
+
+patterns = {}
 
 transformation_horizontal_vertical = {1, 2, 20, 15, 14, 13, 26, 21, 4, 3, 19, 16, 11, 12, 25, 22, 5, 6, 18, 17, 10, 9, 24, 23, 8, 7}
 
@@ -17,12 +15,10 @@ function transform(transformation, buffer)
   return newBuffer
 end
 
-buffer:fill(0, 0, 0, 0)
-buffer:set(1, {50, 50, 50, 50})
-ws2812.write(transform(transformation_horizontal_vertical, buffer))
+local files = file.list("patterns/.+%.lua");
+for name,size in pairs(files) do
+  print("Loading pattern name:"..name..", size:"..size)
+  dofile(name)
+end
 
-
-tmr.create():alarm(100, tmr.ALARM_AUTO, function(t)
-  buffer:shift(1, ws2812.SHIFT_CIRCULAR)
-  ws2812.write(transform(transformation_horizontal_vertical, buffer))
-end)
+patterns.around:start()
