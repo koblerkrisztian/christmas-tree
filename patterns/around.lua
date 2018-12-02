@@ -8,7 +8,7 @@ function Around:start()
     self:writeStep(self.step)
     self.step = self.step + 1
     if self.step > NUM_LEDS then
-      self.step = 1
+      self.step = 0
       self.timer:interval(1000)
     else
       self.timer:interval(100)
@@ -32,11 +32,12 @@ function Around:getColor(intensity, n)
 end
 
 function Around:writeStep(n)
-  self.buffer:fill(0, 0, 0, 0)
-  for i=1,n do
-    self.buffer:set(i, self:getColor(50, i))
+  if n < 1 then
+    self.buffer:fill(0, 0, 0, 0)
+  elseif n <= NUM_LEDS then
+    self.buffer:set(n, self:getColor(50, n))
   end
-  ws2812.write(transform(transformation_horizontal_vertical, self.buffer))
+  ws2812.write(transform(transformation_vertical_horizontal, self.buffer))
 end
 
 local self = setmetatable({}, Around)
