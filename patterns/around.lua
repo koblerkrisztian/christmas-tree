@@ -1,28 +1,10 @@
 local Around = {}
-Around.__index = Around
 
-function Around:start()
-  self.buffer = ws2812.newBuffer(NUM_LEDS, NUM_COLORS)
-  self.timer = tmr.create()
-  self.timer:alarm(100, tmr.ALARM_AUTO, function(t)
-    self:writeStep(self.step)
-    self.step = self.step + 1
-    if self.step > NUM_LEDS then
-      self.step = 0
-      self.timer:interval(1000)
-    else
-      self.timer:interval(100)
-    end
-  end)
-end
+local buffer = nil
+local timer = nil
+local step = 1
 
-function Around:stop()
-  self.buffer = nil
-  self.timer:unregister()
-  self.timer = nil
-end
-
-function Around:getColor(intensity, n)
+local function getColor(intensity, n)
   local color = {color_utils.colorWheel(n*360/NUM_LEDS)}
   for i,v in ipairs(color) do
     color[i] = v*intensity/255
@@ -31,18 +13,34 @@ function Around:getColor(intensity, n)
   return color
 end
 
-function Around:writeStep(n)
+local function writeStep(n)
   if n < 1 then
-    self.buffer:fill(0, 0, 0, 0)
+    buffer:fill(0, 0, 0, 0)
   elseif n <= NUM_LEDS then
-    self.buffer:set(n, self:getColor(50, n))
+    buffer:set(n, getColor(50, n))
   end
-  ws2812.write(transform(transformation_vertical_horizontal, self.buffer))
+  ws2812.write(lights.transform(lights.transformation_vertical_horizontal, buffer))
 end
 
-local self = setmetatable({}, Around)
-self.buffer = nil
-self.timer = nil
-self.step = 1
+function Around.start()
+  buffer = ws2812.newBuffer(NUM_LEDS, NUM_COLORS)
+  timer = tmr.create()
+  timer:alarm(100, tmr.ALARM_AUTO, function(t)
+    writeStep(step)
+    step = step + 1
+    if step > NUM_LEDS then
+      step = 0
+      timer:interval(1000)
+    else
+      timer:interval(100)
+    end
+  end)
+end
 
-patterns.around = self
+function Around.stop()
+  buffer = nil
+  timer:unregister()
+  timer = nil
+end
+
+return Around
