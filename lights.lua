@@ -6,6 +6,7 @@ ws2812.init()
 patterns = {}
 
 transformation_horizontal_vertical = {1, 2, 20, 15, 14, 13, 26, 21, 4, 3, 19, 16, 11, 12, 25, 22, 5, 6, 18, 17, 10, 9, 24, 23, 8, 7}
+transformation_vertical_horizontal = {1, 4, 5, 2, 3, 6, 20, 19, 18, 15, 16, 17, 14, 11, 10, 13, 12, 9, 26, 25, 24, 21, 22, 23, 8, 7}
 
 function transform(transformation, buffer)
   local newBuffer = ws2812.newBuffer(buffer:size(), 4)
