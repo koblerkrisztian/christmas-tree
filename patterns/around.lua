@@ -43,4 +43,16 @@ function Around.stop()
   timer = nil
 end
 
+function Around.pause()
+  if timer then
+    timer:stop()
+  end
+end
+
+function Around.resume()
+  if timer then
+    timer:start()
+  end
+end
+
 return Around
