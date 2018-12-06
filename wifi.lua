@@ -1,3 +1,5 @@
+require("events")
+
 -- load credentials, 'SSID' and 'PASSWORD' declared and initialize in there
 dofile("credentials.lua")
 
@@ -8,12 +10,25 @@ wifi_connect_event = function(T)
     if disconnect_ct ~= nil then disconnect_ct = nil end
 end
 
+
+function checkInternet()
+  net.dns.resolve("google.com", function(sk, ip)
+    if ip then
+      Events.ConnectedToInternet:post()
+    else
+      print("No internet")
+      tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
+        checkInternet()
+      end)
+    end
+  end)
+end
+
 wifi_got_ip_event = function(T)
   -- Note: Having an IP address does not mean there is internet access!
   -- Internet connectivity can be determined with net.dns.resolve().
   print("Wifi connection is ready! IP address is: "..T.IP)
-  print("Startup will resume momentarily, you have 3 seconds to abort.")
-  print("Waiting...")
+  checkInternet()
 end
 
 wifi_disconnect_event = function(T)
