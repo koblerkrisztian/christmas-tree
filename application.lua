@@ -1,3 +1,5 @@
+require("events")
+require("time")
 -- Start connectgion to Wifi
 dofile("wifi.lua")
 
