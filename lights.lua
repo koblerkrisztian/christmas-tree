@@ -1,5 +1,6 @@
 NUM_LEDS = 26
 NUM_COLORS = 4
+INTENSITY = 50
 
 ws2812.init()
 

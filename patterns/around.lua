@@ -17,7 +17,7 @@ local function writeStep(n)
   if n < 1 then
     buffer:fill(0, 0, 0, 0)
   elseif n <= NUM_LEDS then
-    buffer:set(n, getColor(50, n))
+    buffer:set(n, getColor(INTENSITY, n))
   end
   ws2812.write(lights.transform(lights.transformation_vertical_horizontal, buffer))
 end
