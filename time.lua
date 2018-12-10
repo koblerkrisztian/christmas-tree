@@ -26,6 +26,24 @@ function Time.getTimeSynced()
   return timeSynced
 end
 
+function Time.getOffset()
+  return offset
+end
+
+function Time.setAlarm(hours, minutes, callback)
+  if not timeSynced then return false end
+
+  local seconds = hours * 3600 + minutes * 60
+  local utcSeconds = (seconds - offset) % (24 * 3600)
+  local utcHours = utcSeconds / 3600
+  local utcMinutes = (utcSeconds / 60) % 60
+  cron.schedule(string.format("%d %d * * *", utcMinutes, utcHours), function(e)
+    callback()
+  end)
+
+  return true
+end
+
 local function syncTime()
   sntp.sync(nil, 
   function(sec, usec, server, info)
