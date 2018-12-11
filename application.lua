@@ -3,7 +3,7 @@ require("time")
 require("button")
 
 -- Start connectgion to Wifi
-dofile("wifi.lua")
+require("network")
 
 -- Start lights
-dofile("lights.lua")
+require("lights")
