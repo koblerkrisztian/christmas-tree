@@ -44,5 +44,7 @@ addEvent("WifiDisconnected")
 addEvent("ConnectedToInternet")
 addEvent("TimeSynced")
 addEvent("LocationAcquired")
+addEvent("ButtonDown")
+addEvent("ButtonUp")
 
 return Events
