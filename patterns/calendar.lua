@@ -15,10 +15,10 @@ function Calendar.start()
     local color = {color_utils.hsv2grbw(90, 128, intensity)}
     buffer:set(25, color)
     buffer:set(26, color)
-    ws2812.write(lights.transform(lights.transformation_horizontal_vertical, buffer))
+    ws2812.write(Lights.transform(Lights.transformation_horizontal_vertical, buffer))
     intensity = intensity + step * direction
-    if intensity >= INTENSITY then
-      intensity = INTENSITY
+    if intensity >= Lights.INTENSITY then
+      intensity = Lights.INTENSITY
       direction = -1
     elseif intensity < 0 then
       intensity = 0
@@ -52,7 +52,7 @@ local function isEmptyColor(color)
 end
 
 local function getNewColor()
-  return {color_utils.hsv2grbw(node.random(0, 359), node.random(128, 255), INTENSITY)}
+  return {color_utils.hsv2grbw(node.random(0, 359), node.random(128, 255), Lights.INTENSITY)}
 end
 
 local function fillDays()
@@ -75,7 +75,7 @@ Events.TimeSynced:subscribe(function()
   end)
 end)
 
-buffer = ws2812.newBuffer(NUM_LEDS, NUM_COLORS)
+buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
 buffer:fill(0, 0, 0, 0)
 
 return Calendar
