@@ -12,7 +12,7 @@ local step = 5
 function Calendar.start()
   timer = tmr.create()
   timer:alarm(50, tmr.ALARM_AUTO, function(t)
-    local color = {color_utils.hsv2grbw(90, 128, intensity)}
+    local color = {color_utils.hsv2grbw(30, 128, intensity)}
     buffer:set(25, color)
     buffer:set(26, color)
     ws2812.write(Lights.transform(Lights.transformation_horizontal_vertical, buffer))
@@ -52,7 +52,7 @@ local function isEmptyColor(color)
 end
 
 local function getNewColor()
-  return {color_utils.hsv2grbw(node.random(0, 359), node.random(128, 255), Lights.INTENSITY)}
+  return {color_utils.hsv2grbw(node.random(0, 359), node.random(192, 255), Lights.INTENSITY)}
 end
 
 local function fillDays()
