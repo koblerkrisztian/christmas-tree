@@ -17,6 +17,27 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "label": "Flash firmware",
+      "type": "shell",
+      "command": "make flash4m ESPPORT=/dev/${input:portName}",
+      "options": {
+        "cwd": "${workspaceRoot}/nodemcu-fw",
+        "shell": {
+          "executable": "bash.exe",
+          "args": ["-c"]
+        }
+      },
+      "problemMatcher":"$gcc"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "portName",
+      "description": "Name of the port. For example 'ttyS4'",
+      "default": "ttyS4",
+      "type": "promptString"
     }
   ]
 }
