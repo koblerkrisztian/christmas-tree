@@ -61,6 +61,16 @@ local function setUpTelnet()
   end)
 end
 
+local function setUpMdns()
+  Events.WifiConnected:subscribe(function()
+    mdns.register("christmastree", {
+      description = "Christmas Tree",
+      service = "telnet",
+      port = 2323
+    })
+  end)
+end
+
 function Network.init()
   -- Register WiFi Station event callbacks
   wifi.eventmon.register(wifi.eventmon.STA_CONNECTED, function(T)
@@ -93,6 +103,7 @@ function Network.init()
   end)
 
   setUpTelnet()
+  setUpMdns()
 
   if needEndUserSetup() then
     startEndUserSetup()
