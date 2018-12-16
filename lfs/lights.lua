@@ -56,6 +56,17 @@ local function loadPatterns(matchPattern)
   end
 end
 
+local function loadPatternsLfs()
+  local files = LFS._list
+  for i, name in ipairs(files) do
+    local prefix, patternName = name:match("(patterns_)(%w+)")
+    if prefix and patternName then
+      print("Loading pattern from LFS: "..patternName)
+      table.insert(Lights.patterns, require(prefix..patternName))
+    end
+  end
+end
+
 local function selectPattern(index)
   Lights.stop()
   Lights.start(index)
@@ -69,6 +80,7 @@ function Lights.init()
 
   loadPatterns(matchPatternLua)
   loadPatterns(matchPatternLc)
+  loadPatternsLfs()
 
   Lights.start(1)
 
