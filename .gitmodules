@@ -1,0 +1,3 @@
+[submodule "nodemcu-fw"]
+	path = nodemcu-fw
+	url = https://github.com/koblerkrisztian/nodemcu-firmware.git
