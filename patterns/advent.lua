@@ -77,11 +77,15 @@ local function updateSegmentNumber()
   segmentNumber = num
 end
 
+local alarmSet = false
 Events.TimeSynced:subscribe(function()
   updateSegmentNumber()
-  Time.setAlarm(0, 0, function()
-    updateSegmentNumber()
-  end)
+  if not alarmSet then
+    Time.setAlarm(0, 0, function()
+      updateSegmentNumber()
+    end)
+    alarmSet = true
+  end
 end)
 
 function Advent.setHue(h)

@@ -68,11 +68,15 @@ local function fillDays()
   end
 end
 
+local alarmSet = false
 Events.TimeSynced:subscribe(function()
   fillDays()
-  Time.setAlarm(0, 0, function()
-    fillDays()
-  end)
+  if not alarmSet then
+    Time.setAlarm(0, 0, function()
+      fillDays()
+    end)
+    alarmSet = true
+  end
 end)
 
 buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
