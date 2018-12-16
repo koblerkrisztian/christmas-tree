@@ -3,6 +3,9 @@ require("button")
 
 Network = {}
 
+local telnet = nil
+Network.TELNET_PORT = 2323
+
 function checkInternet()
   net.dns.resolve("google.com", function(sk, ip)
     if ip then
@@ -43,6 +46,21 @@ local function startEndUserSetup()
   end)
 end
 
+local function setUpTelnet()
+  Events.WifiConnected:subscribe(function()
+    if not telnet then
+      telnet = require("telnet")
+    end
+    telnet:open(Network.TELNET_PORT)
+  end)
+
+  Events.WifiDisconnected:subscribe(function()
+    if telnet then
+      telnet:close()
+    end
+  end)
+end
+
 function Network.init()
   -- Register WiFi Station event callbacks
   wifi.eventmon.register(wifi.eventmon.STA_CONNECTED, function(T)
@@ -72,7 +90,9 @@ function Network.init()
     end
 
     Events.WifiDisconnected:post()
- end)
+  end)
+
+  setUpTelnet()
 
   if needEndUserSetup() then
     startEndUserSetup()
