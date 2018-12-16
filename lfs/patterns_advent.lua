@@ -17,9 +17,9 @@ local function getAdventNumber(mon, day, wday)
   else
     daysLeft = 25 - day
   end
-  if daysLeft < 0 then return 4 end
+  if daysLeft <= 0 then return 4 end
 
-  local dayOfWeekCompensation = (7 - (wday - 1)) % 7
+  local dayOfWeekCompensation = 7 - (wday - 1) % 7
 
   return math.max(4 - ((daysLeft - dayOfWeekCompensation) / 7 + 1), 0)
 end
