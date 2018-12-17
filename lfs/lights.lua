@@ -67,12 +67,28 @@ local function loadPatternsLfs()
   end
 end
 
-local function selectPattern(index)
+function Lights.selectPattern(index)
   Lights.stop()
   Lights.start(index)
 end
 
+function Lights.selectNextPattern()
+  Lights.selectPattern(activePattern % #Lights.patterns + 1)
+end
+
+local function loadHwinfo()
+  if file.exists("hwinfo.lua") or file.exists("hwinfo.lc") then
+    local hwinfo = require("hwinfo")
+    if hwinfo then
+      Lights.NUM_LEDS = hwinfo.NUM_LEDS or Lights.NUM_LEDS
+      Lights.NUM_COLORS = hwinfo.NUM_COLORS or Lights.NUM_COLORS
+    end
+  end
+end
+
 function Lights.init()
+  loadHwinfo()
+
   ws2812.init()
 
   local matchPatternLua = "(patterns/)(%w+)(%.lua)"
@@ -85,7 +101,7 @@ function Lights.init()
   Lights.start(1)
 
   Events.ButtonDown:subscribe(function()
-    selectPattern(activePattern % #Lights.patterns + 1)
+    Lights.selectNextPattern()
   end)
 end
 
