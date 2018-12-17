@@ -39,9 +39,9 @@ function Around.start()
 end
 
 function Around.stop()
-  buffer = nil
   timer:unregister()
   timer = nil
+  buffer = nil
 end
 
 function Around.pause()
