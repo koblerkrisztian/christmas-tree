@@ -1,5 +1,6 @@
 require("events")
 require("button")
+require("lights")
 
 Network = {}
 
@@ -37,12 +38,15 @@ local function needEndUserSetup()
 end
 
 local function startEndUserSetup()
+  Lights.startSpecialPattern("endUserSetup")
   wifi.sta.clearconfig()
   enduser_setup.start(function()
     print("Enduser setup finshed successfully")
+    Lights.startSpecialPattern("endUserSetupSuccess")
   end,
   function(err, str)
     print("Enduser setup error #" .. err .. ": " .. str)
+    Lights.startSpecialPattern("endUserSetupFail")
   end)
 end
 

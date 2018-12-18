@@ -22,9 +22,21 @@ function Lights.transform(transformation, buffer)
   return newBuffer
 end
 
+function Lights.getColor(h, s, v)
+  if Lights.NUM_COLORS == 4 then
+    return color_utils.hsv2grbw(h, s, v)
+  else
+    return color_utils.hsv2grb(h, s, v)
+  end
+end
+
+function Lights.getBlack()
+  return Lights.getColor(0, 0, 0)
+end
+
 function Lights.clear()
   local buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
-  buffer:fill(0, 0, 0, 0)
+  buffer:fill(Lights.getBlack())
   ws2812.write(buffer)
 end
 
@@ -74,6 +86,46 @@ end
 
 function Lights.selectNextPattern()
   Lights.selectPattern(activePattern % #Lights.patterns + 1)
+end
+
+function Lights.getNumPatterns()
+  return #Lights.patterns
+end
+
+local function specialPatternAutostopped()
+  Lights.start()
+end
+
+local specialPatterns = {
+  endUserSetup = require("gen_pat_wave").new({h=240, s=255, v=Lights.INTENSITY}, 2, 8),
+  endUserSetupSuccess = require("gen_pat_fade").new({h=120, s=255, v=Lights.INTENSITY}, 10, 3, specialPatternAutostopped, nil, 8),
+  endUserSetupFail = require("gen_pat_fade").new({h=0, s=255, v=Lights.INTENSITY}, 10, 3, specialPatternAutostopped, nil, 8)
+}
+local specialPatternRunning = ""
+
+function Lights.startSpecialPattern(name)
+  Lights.stop()
+  Lights.clear()
+  if specialPatternRunning ~= "" then
+    local p = specialPatterns[specialPatternRunning]
+    if p and p.stop then
+      p:stop()
+    end
+  end
+  local p = specialPatterns[name]
+  if p and p.start then
+    p:start()
+    specialPatternRunning = name
+  end
+end
+
+function Lights.stopSpecialPattern()
+  local p = specialPatterns[specialPatternRunning]
+  if p and p.stop then
+    p:stop()
+  end
+  specialPatternRunning = ""
+  Lights.start()
 end
 
 local function loadHwinfo()

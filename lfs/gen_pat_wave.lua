@@ -1,9 +1,9 @@
 local Wave = {}
 Wave.__index = Wave
 
-function Wave.new(color, steps, interval, length, firstIndex, transformation)
+function Wave.new(hsvColor, steps, length, interval, firstIndex, transformation)
   local self = setmetatable({}, Wave)
-  self.color = color or {h=240, s=255, v=Lights.INTENSITY}
+  self.color = hsvColor or {h=240, s=255, v=Lights.INTENSITY}
   self.steps = steps or 3
   self.interval = interval or 50
   self.length = length or Lights.NUM_LEDS
@@ -14,19 +14,11 @@ function Wave.new(color, steps, interval, length, firstIndex, transformation)
   return self
 end
 
-local function getColor(h, s, v)
-  if Lights.NUM_COLORS == 4 then
-    return {color_utils.hsv2grbw(h, s, v)}
-  else
-    return {color_utils.hsv2grb(h, s, v)}
-  end
-end
-
 function Wave:start()
   local l = Lights
   self.buffer = ws2812.newBuffer(l.NUM_LEDS, l.NUM_COLORS)
   for i=1,self.steps do
-    local c = getColor(self.color.h, self.color.s, self.color.v * i / self.steps)
+    local c = {l.getColor(self.color.h, self.color.s, self.color.v * i / self.steps)}
     self.buffer:set(i + self.firstIndex - 1, c)
     self.buffer:set(self.firstIndex + self.steps * 2 - i - 1, c)
   end
