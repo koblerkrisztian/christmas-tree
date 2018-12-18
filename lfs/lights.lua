@@ -143,8 +143,8 @@ function Lights.init()
 
   ws2812.init()
 
-  local matchPatternLua = "(patterns/)(%w+)(%.lua)"
-  local matchPatternLc = "(patterns/)(%w+)(%.lc)"
+  local matchPatternLua = "(patterns_)(%w+)(%.lua)"
+  local matchPatternLc = "(patterns_)(%w+)(%.lc)"
 
   loadPatterns(matchPatternLua)
   loadPatterns(matchPatternLc)
