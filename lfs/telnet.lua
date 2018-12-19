@@ -141,9 +141,13 @@ local server
 return {
   open = function(this, port)
     print("Welcome to NodeMCU world", node.heap(), wifi.sta.getip())
+    if this.isOpen then
+      this:close()
+    end
     server = net.createServer(net.TCP, 180)
     if not server then return false end
     server:listen(port or 2323, telnet_listener)
+    this.isOpen = true
     return true
   end,
 
@@ -156,5 +160,6 @@ return {
       server:close()
       server = nil
     end
+    this.isOpen = false
   end,
 }

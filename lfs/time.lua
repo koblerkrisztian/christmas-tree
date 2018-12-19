@@ -44,19 +44,26 @@ function Time.setAlarm(hours, minutes, callback)
   return true
 end
 
-local function syncTime()
-  sntp.sync(nil, 
-  function(sec, usec, server, info)
-    timeSynced = true
-    Events.TimeSynced:post()
-  end,
-  function(error, info)
-    print('time sync failed!', error, info)
-    tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
-      syncTime()
-    end)
-  end,
-  1)
+local syncTime
+local function retrySync()
+  tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
+    syncTime()
+  end)
+end
+
+function syncTime()
+  local success = pcall(function()
+    sntp.sync(nil, function(sec, usec, server, info)
+      timeSynced = true
+      Events.TimeSynced:post()
+    end,
+    function(error, info)
+      print('time sync failed!', error, info)
+      retrySync()
+    end,
+    1)
+  end)
+  if not success then retrySync() end
 end
 
 local function acquireLocationInfo(callback)
