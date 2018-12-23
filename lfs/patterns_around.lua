@@ -4,32 +4,30 @@ local buffer = nil
 local timer = nil
 local step = 1
 
-local function getColor(intensity, n)
-  local color = {color_utils.colorWheel(n*360/Lights.NUM_LEDS)}
-  for i,v in ipairs(color) do
-    color[i] = v*intensity/255
-  end
-  table.insert(color, 0)
-  return color
+local function getColor(n)
+  local l = Lights
+  return {l.getColor(n*360/l.NUM_LEDS, 255, l.INTENSITY)}
 end
 
 local function writeStep(n)
+  local l = Lights
   if n < 1 then
-    buffer:fill(0, 0, 0, 0)
-  elseif n <= Lights.NUM_LEDS then
-    buffer:set(n, getColor(Lights.INTENSITY, n))
+    buffer:fill(l.getBlack())
+  elseif n <= l.NUM_LEDS then
+    buffer:set(n, getColor(n))
   end
-  ws2812.write(Lights.transform(Lights.transformation_vertical_horizontal, buffer))
+  ws2812.write(l.transform(l.transformation_vertical_horizontal, buffer))
 end
 
 function Around.start()
-  buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
+  local l = Lights
+  buffer = ws2812.newBuffer(l.NUM_LEDS, l.NUM_COLORS)
   timer = tmr.create()
   step = 1
   timer:alarm(100, tmr.ALARM_AUTO, function(t)
     writeStep(step)
     step = step + 1
-    if step > Lights.NUM_LEDS then
+    if step > l.NUM_LEDS then
       step = 0
       timer:interval(1000)
     else

@@ -31,25 +31,27 @@ local function getSegmentNumber()
 end
 
 local function clearBuffer()
+  local l = Lights
   if buffer then
-    buffer:fill(0, 0, 0, 0)
-    buffer:set(25, {0, Lights.INTENSITY, 0, 0})
-    buffer:set(26, {0, Lights.INTENSITY, 0, 0})
+    buffer:fill(l.getBlack())
+    buffer:set(25, {l.getColor(0, 255, l.INTENSITY)})
+    buffer:set(26, {l.getColor(0, 255, l.INTENSITY)})
   end
 end
 
 function Advent.start()
-  buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
+  local l = Lights
+  buffer = ws2812.newBuffer(l.NUM_LEDS, l.NUM_COLORS)
   clearBuffer()
 
   timer = tmr.create()
   timer:alarm(200, tmr.ALARM_AUTO, function(t)
-    local intensity = Lights.INTENSITY
+    local intensity = l.INTENSITY
     for i=1, segmentNumber * 6 do
-      local color = {color_utils.hsv2grbw(hue, 224, intensity + (node.random(-2, 2) * intensity / 10))}
+      local color = {l.getColor(hue, 224, intensity + (node.random(-2, 2) * intensity / 10))}
       buffer:set(i, color)
     end
-    ws2812.write(Lights.transform(Lights.transformation_vertical_horizontal, buffer))
+    ws2812.write(l.transform(l.transformation_vertical_horizontal, buffer))
   end)
 end
 

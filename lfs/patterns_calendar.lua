@@ -10,15 +10,16 @@ local direction = 1
 local step = 5
 
 function Calendar.start()
+  local l = Lights
   timer = tmr.create()
   timer:alarm(50, tmr.ALARM_AUTO, function(t)
-    local color = {color_utils.hsv2grbw(30, 128, intensity)}
+    local color = {l.getColor(30, 128, intensity)}
     buffer:set(25, color)
     buffer:set(26, color)
-    ws2812.write(Lights.transform(Lights.transformation_horizontal_vertical, buffer))
+    ws2812.write(l.transform(l.transformation_horizontal_vertical, buffer))
     intensity = intensity + step * direction
-    if intensity >= Lights.INTENSITY then
-      intensity = Lights.INTENSITY
+    if intensity >= l.INTENSITY then
+      intensity = l.INTENSITY
       direction = -1
     elseif intensity < 0 then
       intensity = 0
@@ -45,14 +46,15 @@ function Calendar.stop()
 end
 
 local function isEmptyColor(color)
-  for k,v in ipairs(color) do
+  for k,v in pairs(color) do
     if v ~= 0 then return false end
   end
   return true
 end
 
 local function getNewColor()
-  return {color_utils.hsv2grbw(node.random(0, 359), node.random(192, 255), Lights.INTENSITY)}
+  local l = Lights
+  return {l.getColor(node.random(0, 359), node.random(192, 255), l.INTENSITY)}
 end
 
 local function fillDays()
@@ -80,6 +82,6 @@ Events.TimeSynced:subscribe(function()
 end)
 
 buffer = ws2812.newBuffer(Lights.NUM_LEDS, Lights.NUM_COLORS)
-buffer:fill(0, 0, 0, 0)
+buffer:fill(Lights.getBlack())
 
 return Calendar
