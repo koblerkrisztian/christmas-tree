@@ -31,9 +31,11 @@ local function getSegmentNumber()
 end
 
 local function clearBuffer()
-  buffer:fill(0, 0, 0, 0)
-  buffer:set(25, {0, Lights.INTENSITY, 0, 0})
-  buffer:set(26, {0, Lights.INTENSITY, 0, 0})
+  if buffer then
+    buffer:fill(0, 0, 0, 0)
+    buffer:set(25, {0, Lights.INTENSITY, 0, 0})
+    buffer:set(26, {0, Lights.INTENSITY, 0, 0})
+  end
 end
 
 function Advent.start()
@@ -52,9 +54,9 @@ function Advent.start()
 end
 
 function Advent.stop()
-  buffer = nil
   timer:unregister()
   timer = nil
+  buffer = nil
 end
 
 function Advent.pause()
