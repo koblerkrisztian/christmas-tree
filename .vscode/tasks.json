@@ -6,9 +6,8 @@
     {
       "label": "Build Firmware",
       "type": "shell",
-      "command": "make all",
+      "command": "make firmware",
       "options": {
-        "cwd": "${workspaceRoot}/nodemcu-fw",
         "shell": {
           "executable": "bash.exe",
           "args": [
@@ -23,9 +22,8 @@
     {
       "label": "Flash firmware",
       "type": "shell",
-      "command": "make flash4m ESPPORT=/dev/${input:portName}",
+      "command": "sudo make flash-firmware ESPPORT=/dev/${input:portName}",
       "options": {
-        "cwd": "${workspaceRoot}/nodemcu-fw",
         "shell": {
           "executable": "bash.exe",
           "args": [
@@ -38,7 +36,7 @@
     {
       "label": "Build LFS Image",
       "type": "shell",
-      "command": "nodemcu-fw/luac.cross -o lfs.img -f lfs/*",
+      "command": "make lfs-image",
       "options": {
         "shell": {
           "executable": "bash.exe",

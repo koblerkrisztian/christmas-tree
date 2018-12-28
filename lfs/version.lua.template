@@ -1,0 +1,4 @@
+return {
+  version = "%version%",
+  date = "%date%"
+}
