@@ -5,6 +5,7 @@ Lights = {}
 Lights.NUM_LEDS = 26
 Lights.NUM_COLORS = 4
 Lights.INTENSITY = 50
+Lights.AUTO_CYCLE_INTERVAL_MS = 10 * 60 * 1000
 
 Lights.patterns = {}
 
@@ -13,6 +14,8 @@ Lights.transformation_vertical_horizontal = {1, 4, 5, 2, 3, 6, 20, 19, 18, 15, 1
 
 local activePattern = 0
 local isRunning = false
+local autoCycle = false
+local autoCycleTimer = nil
 
 function Lights.transform(transformation, buffer)
   local newBuffer = ws2812.newBuffer(buffer:size(), Lights.NUM_COLORS)
@@ -40,6 +43,15 @@ function Lights.clear()
   ws2812.write(buffer)
 end
 
+local function getActivePattern()
+  local index = activePattern
+  if index > 0 and index <= #Lights.patterns then
+    return Lights.patterns[index]
+  else
+    return nil
+  end
+end
+
 function Lights.start(index)
   if isRunning then return end
   if index == nil then index = activePattern end
@@ -52,11 +64,38 @@ end
 
 function Lights.stop()
   if not isRunning then return end
-  local index = activePattern
-  if index > 0 and index <= #Lights.patterns then
-    Lights.patterns[index]:stop()
+  local pattern = getActivePattern()
+  if pattern then
+    pattern:stop()
     isRunning = false
   end
+end
+
+function Lights.pause()
+  if not isRunning then return end
+
+  local pattern = getActivePattern()
+  if pattern then
+    pattern:pause()
+  end
+  Lights.clear()
+end
+
+function Lights.resume()
+  if not isRunning then return end
+
+  local pattern = getActivePattern()
+  if pattern then
+    pattern:resume()
+  end
+end
+
+function Lights.pauseFor(time_ms, callback_func)
+  Lights.pause()
+  tmr.create():alarm(time_ms, tmr.ALARM_SINGLE, function()
+    Lights.resume()
+    callback_func()
+  end)
 end
 
 local function loadPatterns(matchPattern)
@@ -138,6 +177,32 @@ local function loadHwinfo()
   end
 end
 
+function Lights.startAutoCycle()
+  Lights.pauseFor(300, function()
+    autoCycleTimer = tmr.create()
+    autoCycleTimer:alarm(Lights.AUTO_CYCLE_INTERVAL_MS, tmr.ALARM_AUTO, function()
+      Lights.selectNextPattern()
+    end)
+    autoCycle = true
+  end)
+end
+
+function Lights.stopAutoCycle()
+  Lights.pauseFor(300, function()
+    autoCycleTimer:unregister()
+    autoCycleTimer = nil
+    autoCycle = false
+  end)
+end
+
+function Lights.toggleAutoCycle()
+  if autoCycle then
+    Lights.stopAutoCycle()
+  else
+    Lights.startAutoCycle()
+  end
+end
+
 function Lights.init()
   loadHwinfo()
 
@@ -154,6 +219,9 @@ function Lights.init()
 
   Events.ButtonDown:subscribe(function()
     Lights.selectNextPattern()
+  end)
+  Events.ButtonLongPress:subscribe(function()
+    Lights.toggleAutoCycle()
   end)
 end
 
