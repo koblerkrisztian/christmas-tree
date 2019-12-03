@@ -46,5 +46,6 @@ addEvent("TimeSynced")
 addEvent("LocationAcquired")
 addEvent("ButtonDown")
 addEvent("ButtonUp")
+addEvent("ButtonLongPress")
 
 return Events
