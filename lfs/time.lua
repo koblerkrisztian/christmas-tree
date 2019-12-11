@@ -72,7 +72,7 @@ local function acquireLocationInfo(callback)
   function(status, body)
     if status < 0 then
       tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
-        acquireLocationInfo()
+        acquireLocationInfo(callback)
       end)
     else
       local loc = sjson.decode(body)
