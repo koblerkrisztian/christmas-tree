@@ -2,6 +2,8 @@ require("events")
 
 Time = {}
 
+local defaultOffset = 3600
+
 local timeSynced = false
 local locationAcquired = false
 local offset = 0
@@ -81,13 +83,22 @@ local function acquireLocationInfo(callback)
   end)
 end
 
+local function parseOffset(loc)
+  if not loc or not loc.geobytestimezone then
+    return defaultOffset
+  end
+
+  local sign, hours, minutes = string.match(loc.geobytestimezone, "^([%+%-]?)(%d%d):(%d%d)$")
+  local offset = tonumber(hours) * 3600 + tonumber(minutes) * 60
+  if sign and sign == "-" then
+    offset = -offset
+  end
+  return offset
+end
+
 Events.ConnectedToInternet:subscribe(function()
   acquireLocationInfo(function(loc)
-    local sign, hours, minutes = string.match(loc.geobytestimezone, "^([%+%-]?)(%d%d):(%d%d)$")
-    offset = tonumber(hours) * 3600 + tonumber(minutes) * 60
-    if sign and sign == "-" then
-      offset = -offset
-    end
+    offset = parseOffset(loc)
     locationAcquired = true
     Events.LocationAcquired:post()
   end)
