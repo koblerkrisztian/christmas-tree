@@ -1,4 +1,5 @@
 require("events")
+require("settings")
 
 Lights = {}
 
@@ -120,6 +121,9 @@ end
 
 function Lights.selectPattern(index)
   Lights.stop()
+  if not autoCycle then
+    Settings.setLastPattern(index)
+  end
   Lights.start(index)
 end
 
@@ -184,6 +188,7 @@ function Lights.startAutoCycle()
       Lights.selectNextPattern()
     end)
     autoCycle = true
+    Settings.setLastPattern("auto")
   end)
 end
 
@@ -203,6 +208,21 @@ function Lights.toggleAutoCycle()
   end
 end
 
+local function isNumber(n)
+  return type(n) == "number"
+end
+
+local function getInitialPattern()
+  local lastPattern = Settings.getLastPatter()
+  if lastPattern == "auto" then
+    return true, 1
+  end
+  if lastPattern and isNumber(lastPattern) and lastPattern <= #Lights.patterns then
+    return false, lastPattern
+  end
+  return false, 1
+end
+
 function Lights.init()
   loadHwinfo()
 
@@ -215,7 +235,11 @@ function Lights.init()
   loadPatterns(matchPatternLc)
   loadPatternsLfs()
 
-  Lights.start(1)
+  local auto, patternIndex = getInitialPattern()
+  Lights.start(patternIndex)
+  if auto then
+    Lights.startAutoCycle()
+  end
 
   Events.ButtonDown:subscribe(function()
     Lights.selectNextPattern()
