@@ -26,8 +26,8 @@ function Rainbow.start()
   writeColors(0)
 
   timer:alarm(150, tmr.ALARM_AUTO, function(t)
-    phase = (phase + speed) % 360
-    writeColors(phase)
+    buffer:shift(1, ws2812.SHIFT_CIRCULAR)
+    ws2812.write(l.transform(l.transformation_vertical_horizontal, buffer))
   end)
 end
 
