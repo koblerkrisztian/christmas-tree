@@ -13,6 +13,7 @@ local function ceilDiv(dividend, divisor)
 end
 
 local function getAdventNumber(mon, day, wday)
+  if mon == 1 and day <= 6 then return 4 end
   if mon < 11 then return 0 end
 
   local daysLeft = 0

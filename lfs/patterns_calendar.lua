@@ -57,12 +57,19 @@ local function getNewColor()
   return {l.getColor(node.random(0, 359), node.random(192, 255), l.INTENSITY)}
 end
 
-local function fillDays()
+local function getNumberOfDays()
   local t = Time.getLocalTime()
-  local numDays = 0
   if t.mon == 12 then
-    numDays = math.min(t.day, 24)
+    return math.min(t.day, 24)
+  elseif t.mon == 1 and t.day <= 6 then
+    return 24
+  else
+    return 0
   end
+end
+
+local function fillDays()
+  local numDays = getNumberOfDays()
   for i=1,numDays do
     if isEmptyColor({buffer:get(i)}) then
       buffer:set(i, getNewColor())
