@@ -53,11 +53,17 @@ local function retrySync()
   end)
 end
 
+function printTime()
+  local t = Time.getLocalTime()
+  print(string.format("%d.%d.%d %d:%d:%d (%d)", t.year, t.mon, t.day, t.hour, t.min, t.sec, t.wday))
+end
+
 function syncTime()
   local success = pcall(function()
     sntp.sync(nil, function(sec, usec, server, info)
       timeSynced = true
       Events.TimeSynced:post()
+      printTime()
     end,
     function(error, info)
       print('time sync failed!', error, info)
