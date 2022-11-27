@@ -8,20 +8,26 @@ local timer = nil
 local segmentNumber = 0
 local hue = 20
 
+local function ceilDiv(dividend, divisor)
+  return (dividend + divisor - 1) / divisor
+end
+
 local function getAdventNumber(mon, day, wday)
   if mon < 11 then return 0 end
 
   local daysLeft = 0
   if mon == 11 then
-    daysLeft = 30 - day + 25
+    daysLeft = 30 - day + 24
   else
-    daysLeft = 25 - day
+    daysLeft = 24 - day
   end
   if daysLeft <= 0 then return 4 end
 
-  local dayOfWeekCompensation = 7 - (wday - 1) % 7
+  local wdayOfChristmas = (wday - 1 + daysLeft) % 7 + 1
+  local daysToLastSunday = daysLeft - (wdayOfChristmas - 1)
+  local adventNum = 4 - ceilDiv(daysToLastSunday, 7)
 
-  return math.max(4 - ((daysLeft - dayOfWeekCompensation) / 7 + 1), 0)
+  return math.min(math.max(adventNum, 0), 4)
 end
 
 local function getSegmentNumber()
